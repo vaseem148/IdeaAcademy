@@ -1,8 +1,9 @@
-const userRouter = require('./user-route');
-const {Router}  =require('express');
-const router = Router();
+const express = require("express");
+const router = express.Router();
 
+const admissionRoutes = require("./admissionRoutes");
 
-router.use('/user', userRouter);
+// 👉 MAIN CONNECT
+router.use("/admissions", admissionRoutes);
 
 module.exports = router;
