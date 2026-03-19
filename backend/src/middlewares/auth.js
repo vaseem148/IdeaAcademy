@@ -1,6 +1,6 @@
-const { verifyTokenAndSendPayload } = require("../utils/auth");
+import { verifyTokenAndSendPayload } from "../utils/auth.js";
 
-const handleCheckAuthentication = (req, res, next) => {
+export const handleCheckAuthentication = (req, res, next) => {
     try {
         req.user = null;
         const token = req.cookies?.auth_token;
@@ -17,5 +17,3 @@ const handleCheckAuthentication = (req, res, next) => {
         return res.status(500).json({ msg: `Internal Server Error : ${err.message}` });
     }
 }
-
-module.exports = handleCheckAuthentication

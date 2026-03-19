@@ -1,9 +1,9 @@
-const express = require("express");
-const router = express.Router();
+import express from "express";
+import admissionRoutes from "./admissionRoutes.js";
 
-const admissionRoutes = require("./admissionRoutes");
+const router = express.Router();
 
 // 👉 MAIN CONNECT
 router.use("/admissions", admissionRoutes);
 
-module.exports = router;
+export default router;

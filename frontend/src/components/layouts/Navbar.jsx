@@ -24,9 +24,15 @@ const Navbar = () => {
      { name: "CONTACT", id: "contact" },
   ];
 
-  const handleNavClick = (id) => {
+  const handleNavClick = (link) => {
     setIsMobileMenuOpen(false);
 
+    if (link.path) {
+      navigate(link.path);
+      return;
+    }
+
+    const { id } = link;
     if (location.pathname !== "/") {
       navigate("/");
       setTimeout(() => {
@@ -70,7 +76,7 @@ const Navbar = () => {
           {navLinks.map((link) => (
             <button
               key={link.name}
-              onClick={() => handleNavClick(link.id)}
+              onClick={() => handleNavClick(link)}
               className="relative text-white/90 uppercase hover:text-[#d4a34d] transition-colors duration-300 group"
             >
               {link.name}

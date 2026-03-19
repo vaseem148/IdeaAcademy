@@ -1,35 +1,30 @@
-require("dotenv").config();
-const express = require("express");
-const connectMongoDB = require("./utils/mongoDBConnection");
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import connectMongoDB from "./utils/mongoDBConnection.js";
+
+import userRoutes from "./routes/user-route.js";
+import rootRoutes from "./routes/index.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// middlewares
+// Middleware
+app.use(cors({
+  origin: true,
+  credentials: true,
+}));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true
-}));
-
-// DB connect
+// Database Connection
 connectMongoDB();
 
-// test route
+// Routes
 app.get("/", (req, res) => {
-  res.send("Server Running ✅");
+  res.send("API Running 🚀");
 });
 
-// routes
-const router = require("./routes/index");
-app.use("/api", router);
+app.use("/api/users", userRoutes);
+app.use("/api", rootRoutes);
 
-// start server
-app.listen(PORT, () => {
-  console.log(`Server Started At PORT : ${PORT}`);
-});
+export default app;

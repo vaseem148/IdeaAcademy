@@ -1,38 +1,32 @@
-const { Schema, model } = require('mongoose');
-const bcrypt = require('bcrypt');
+import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  phone: String,
+  course: String,
+  message: String,
+}, { timestamps: true });
 
-const userSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    password: {
-        type: String,
-        required: true
-    }
+// Hash password before saving
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
 });
 
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next(); // Only hash if password changed
-    try {
-        const hashedPassword = await bcrypt.hash(this.password, 10);
-        this.password = hashedPassword;
-        next();
-    } catch (err) {
-        next(err);
-    }
-});
+// Method to verify password
+userSchema.methods.verifyPassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
-userSchema.methods.verifyPassword = async function (userTypedPwd) { // Verify User password with db password
-    return await bcrypt.compare(userTypedPwd, this.password);
-}
+const User = mongoose.model("User", userSchema);
 
-const userModel = model('User', userSchema);
-
-module.exports = userModel;
+export default User;

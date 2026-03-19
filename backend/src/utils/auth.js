@@ -1,8 +1,8 @@
-const jwt = require("jsonwebtoken"); // This File for managing the token and cookie so user not to login every time the page reload.
+import jwt from "jsonwebtoken";
 
 const jwtSecret = process.env.JWT_SECRET;
 
-const generateTokenAndSendCookie = (user, res) => {
+export const generateTokenAndSendCookie = (user, res) => {
     const userPayload = {
         _id: user._id,
         email: user.email,
@@ -26,11 +26,6 @@ const generateTokenAndSendCookie = (user, res) => {
 
 }
 
-const verifyTokenAndSendPayload = (token) => {
+export const verifyTokenAndSendPayload = (token) => {
     return jwt.verify(token, jwtSecret);
-}
-
-module.exports = {
-    generateTokenAndSendCookie,
-    verifyTokenAndSendPayload
 }

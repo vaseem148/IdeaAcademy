@@ -1,7 +1,7 @@
-const User = require("../models/user-model");
-const { generateTokenAndSendCookie } = require("../utils/auth");
+import User from "../models/user-model.js";
+import { generateTokenAndSendCookie } from "../utils/auth.js";
 
-const handleUserSignUp = async (req, res) => {
+export const handleUserSignUp = async (req, res) => {
     try {
         const { name, email, password } = req.body;
         const isAlreadyUser = await User.findOne({ email });
@@ -18,29 +18,39 @@ const handleUserSignUp = async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        return res.status(500).json({ error: err.msg })
+        return res.status(500).json({ error: err.message })
     }
 }
-const handleUserSignIn = async (req, res) => {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
 
-    if (!user) return res.status(400).json({ msg: "User not found!" });
+export const handleUserSignIn = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        console.log("🔑 LOGIN ATTEMPT:", email);
+        
+        const user = await User.findOne({ email });
+        if (!user) {
+            console.log("❌ USER NOT FOUND:", email);
+            return res.status(400).json({ msg: "User not found!" });
+        }
 
-    const verified = await user.verifyPassword(password);
-    if (!verified) return res.status(400).json({ msg: "Wrong password!" });
+        const verified = await user.verifyPassword(password);
+        if (!verified) {
+            console.log("❌ WRONG PASSWORD FOR:", email);
+            return res.status(400).json({ msg: "Wrong password!" });
+        }
 
-    const { password: _, ...userWithoutPwd } = user.toObject();
+        console.log("✅ LOGIN SUCCESS:", email);
+        const { password: _, ...userWithoutPwd } = user.toObject();
 
-
-
-    generateTokenAndSendCookie(user, res);
-    return res.status(200).json({ msg: `User Signin successful`, user: userWithoutPwd });
+        generateTokenAndSendCookie(user, res);
+        return res.status(200).json({ msg: `User Signin successful`, user: userWithoutPwd });
+    } catch (err) {
+        console.error("❌ LOGIN ERROR:", err);
+        return res.status(500).json({ error: err.message })
+    }
 };
 
-
-
-const handleGetCurrentUser = async (req, res) => {
+export const handleGetCurrentUser = async (req, res) => {
     try {
         const { email } = req.user;
 
@@ -48,12 +58,11 @@ const handleGetCurrentUser = async (req, res) => {
         return res.status(200).json({ msg: `Welcome Back ${user.name}`, user });
 
     } catch (err) {
-        return res.status(500).json({ msg: err.msg })
+        return res.status(500).json({ msg: err.message })
     }
 };
 
-
-const handleLogoutUser = async (req, res) => {
+export const handleLogoutUser = async (req, res) => {
     try {
         res.clearCookie("auth_token", {
             httpOnly: true,
@@ -66,9 +75,4 @@ const handleLogoutUser = async (req, res) => {
         console.log(err);
         return res.status(500).json({ msg: `Internal Server Error : ${err.message}` })
     }
-}
-
-module.exports = {
-    handleGetCurrentUser, handleUserSignIn, handleUserSignUp,
-    handleLogoutUser
 }

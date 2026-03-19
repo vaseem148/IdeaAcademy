@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { motion } from "framer-motion";
 
-const AdmissionPage = () => {
+const Adform = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -10,149 +11,142 @@ const AdmissionPage = () => {
     message: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    setIsSubmitting(true);
 
-    // later backend / email integration pannalam
-    alert("Application Submitted 🚀");
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/admissions",
+        formData
+      );
+
+      console.log(res.data);
+      alert("Application Submitted & Saved to DB ✅");
+
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        course: "",
+        message: "",
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Error submitting application. Please try again. ❌");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="bg-[#0b1628] text-white">
-
-      {/* HERO SECTION */}
-      <section className="relative py-24 bg-[#1a2e4c] overflow-hidden text-center px-6">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_rgba(212,163,77,0.05)_0%,_transparent_70%)]" />
-
+    <div className="min-h-screen bg-[#0b1628] pt-32 pb-20 px-6">
+      <div className="max-w-3xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative z-10 max-w-4xl mx-auto"
+          className="bg-white/5 border border-white/10 backdrop-blur-xl p-8 md:p-12 rounded-3xl shadow-2xl"
         >
-          <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6">
-            Start Your Journey at{" "}
-            <span className="text-[#d4a34d]">Idea Academy</span>
-          </h1>
+          <div className="text-center mb-10">
+            <h2 className="text-4xl md:text-5xl font-serif font-bold text-white mb-4">
+              Student <span className="text-[#d4a34d]">Application</span>
+            </h2>
+            <p className="text-gray-400">
+              Please fill out the form below to start your journey with Idea Academy.
+            </p>
+          </div>
 
-          <p className="text-white/70 max-w-2xl mx-auto">
-            Fill out the application form below and take your first step towards a successful future.
-          </p>
-        </motion.div>
-      </section>
-
-      {/* FORM SECTION */}
-      <section className="py-20 px-6">
-        <div className="max-w-3xl mx-auto">
-
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="relative group"
-          >
-            {/* glow */}
-            <div className="absolute -inset-[1px] bg-gradient-to-r from-[#d4a34d]/40 to-transparent rounded-2xl blur opacity-40"></div>
-
-            <form
-              onSubmit={handleSubmit}
-              className="relative bg-white/5 border border-white/10 backdrop-blur-xl p-8 md:p-10 rounded-2xl space-y-6"
-            >
-              <h2 className="text-2xl font-semibold mb-4">
-                Admission Form
-              </h2>
-
-              {/* NAME */}
-              <div>
-                <label className="text-sm text-white/60">Full Name</label>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-300">Full Name</label>
                 <input
                   type="text"
                   name="name"
-                  required
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full mt-2 px-4 py-3 rounded-lg bg-white/5 border border-white/20 focus:outline-none focus:border-[#d4a34d] focus:ring-2 focus:ring-[#d4a34d]/30"
+                  required
+                  placeholder="John Doe"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#d4a34d] focus:ring-1 focus:ring-[#d4a34d] transition"
                 />
               </div>
 
-              {/* EMAIL */}
-              <div>
-                <label className="text-sm text-white/60">Email</label>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-300">Email Address</label>
                 <input
                   type="email"
                   name="email"
-                  required
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full mt-2 px-4 py-3 rounded-lg bg-white/5 border border-white/20 focus:outline-none focus:border-[#d4a34d] focus:ring-2 focus:ring-[#d4a34d]/30"
+                  required
+                  placeholder="john@example.com"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#d4a34d] focus:ring-1 focus:ring-[#d4a34d] transition"
                 />
               </div>
+            </div>
 
-              {/* PHONE */}
-              <div>
-                <label className="text-sm text-white/60">Phone</label>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-300">Phone Number</label>
                 <input
                   type="tel"
                   name="phone"
-                  required
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full mt-2 px-4 py-3 rounded-lg bg-white/5 border border-white/20 focus:outline-none focus:border-[#d4a34d]"
+                  required
+                  placeholder="+91 12345 67890"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#d4a34d] focus:ring-1 focus:ring-[#d4a34d] transition"
                 />
               </div>
 
-              {/* COURSE */}
-              <div>
-                <label className="text-sm text-white/60">Select Course</label>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-300">Interested Course</label>
                 <select
                   name="course"
-                  required
                   value={formData.course}
                   onChange={handleChange}
-                  className="w-full mt-2 px-4 py-3 rounded-lg bg-white/5 border border-white/20 focus:outline-none focus:border-[#d4a34d]"
+                  required
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#d4a34d] focus:ring-1 focus:ring-[#d4a34d] transition appearance-none"
                 >
-                  <option value="">Choose a program</option>
-                  <option value="web">Web Development</option>
-                  <option value="design">UI/UX Design</option>
-                  <option value="marketing">Digital Marketing</option>
+                  <option value="" disabled className="bg-[#1a2e4c]">Select a course</option>
+                  <option value="Arts" className="bg-[#1a2e4c]">Arts & Humanities</option>
+                  <option value="Science" className="bg-[#1a2e4c]">Science & Tech</option>
+                  <option value="Business" className="bg-[#1a2e4c]">Business Studies</option>
                 </select>
               </div>
+            </div>
 
-              {/* MESSAGE */}
-              <div>
-                <label className="text-sm text-white/60">Message</label>
-                <textarea
-                  name="message"
-                  rows="4"
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="w-full mt-2 px-4 py-3 rounded-lg bg-white/5 border border-white/20 focus:outline-none focus:border-[#d4a34d]"
-                ></textarea>
-              </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300">Message / Statement of Purpose</label>
+              <textarea
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                rows="4"
+                placeholder="Tell us about yourself..."
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#d4a34d] focus:ring-1 focus:ring-[#d4a34d] transition"
+              ></textarea>
+            </div>
 
-              {/* BUTTON */}
-              <button
-                type="submit"
-                className="w-full bg-[#d4a34d] text-[#0b1628] py-3 rounded-lg font-bold tracking-wide
-                hover:scale-[1.02] transition-all duration-300
-                hover:shadow-[0_0_25px_rgba(212,163,77,0.6)]"
-              >
-                SUBMIT APPLICATION →
-              </button>
-            </form>
-          </motion.div>
-        </div>
-      </section>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-[#d4a34d] text-[#1a2e4c] font-bold py-4 rounded-xl hover:bg-[#c3923d] transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_0_rgb(163,123,56)] active:shadow-none active:translate-y-1"
+            >
+              {isSubmitting ? "Submitting..." : "Submit Application"}
+            </button>
+          </form>
+        </motion.div>
+      </div>
     </div>
   );
 };
 
-export default AdmissionPage;
+export default Adform;

@@ -1,9 +1,12 @@
-const express = require("express");
+import express from "express";
+import { createAdmission, getAdmissions } from "../controllers/admissionController.js";
+
 const router = express.Router();
 
-const { createAdmission } = require("../controllers/admissionController");
-
-// 👉 POST API
+// 👉 POST API (Save data)
 router.post("/", createAdmission);
 
-module.exports = router;
+// 👉 GET API (View data)
+router.get("/", getAdmissions);
+
+export default router;

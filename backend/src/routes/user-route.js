@@ -1,18 +1,17 @@
-const { Router } = require("express");
-const router = Router();
+import express from "express";
+import { 
+    handleUserSignUp, 
+    handleUserSignIn, 
+    handleGetCurrentUser, 
+    handleLogoutUser 
+} from "../controllers/user-controller.js";
+import { handleCheckAuthentication } from "../middlewares/auth.js";
 
-const checkAuthentication = require("../middlewares/auth");
-const { handleUserSignUp, handleUserSignIn, handleGetCurrentUser, handleLogoutUser } = require("../controllers/user-controller");
+const router = express.Router();
 
+router.post("/register", handleUserSignUp); 
+router.post("/login", handleUserSignIn);
+router.get("/me", handleCheckAuthentication, handleGetCurrentUser);
+router.post("/logout", handleLogoutUser);
 
-
-router.post('/signup', handleUserSignUp)
-
-router.post('/signin', handleUserSignIn);
-
-router.get("/me", checkAuthentication, handleGetCurrentUser)
-
-router.get("/logout", checkAuthentication, handleLogoutUser)
-
-
-module.exports = router;
+export default router;
